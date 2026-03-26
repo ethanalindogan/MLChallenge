@@ -18,7 +18,8 @@ import numpy
 # ── Embedded model weights (trained on full dataset, C=5.0 LR) ──────────────
 
 CLASSES = ['The Persistence of Memory', 'The Starry Night', 'The Water Lily Pond']
-
+# Weights calculated externally using sklearn to see how much the features
+# push towards its class 
 WEIGHTS = numpy.array([
     [0.5305219181750178, -0.7578899347972484, -0.07559862443166689,
      0.5138131751915639, -0.02686477010230074, 0.11168589907085641,
@@ -46,7 +47,7 @@ WEIGHTS = numpy.array([
      -0.8861163557071883]
 ])
 
-INTERCEPT = numpy.array([-0.6710807417608232, 0.1434892035844533, 0.5275915381763615])
+BIAS = numpy.array([-0.6710807417608232, 0.1434892035844533, 0.5275915381763615])
 
 
 # ── Feature extraction ───────────────────────────────────────────────────────
@@ -157,7 +158,7 @@ def predict(row):
     Returns one of: 'The Persistence of Memory', 'The Starry Night', 'The Water Lily Pond'
     """
     x = extract_features(row)
-    logits = WEIGHTS @ x + INTERCEPT
+    logits = WEIGHTS @ x + BIAS
     probs = softmax(logits)
     return CLASSES[int(numpy.argmax(probs))]
 
