@@ -15,6 +15,11 @@ import pandas as pd
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import GridSearchCV
+
+
+
 
 # ── Step 1: Load the data ──────────────────────────────────────────────────
 df = pd.read_csv('ml_challenge_dataset.csv')
@@ -43,8 +48,8 @@ df['num_colours'] = df['How many prominent colours do you notice in this paintin
 df['num_objects']  = df['How many objects caught your eye in the painting?'].clip(upper=20).fillna(3.0)
 
 season_col = 'What season does this art piece remind you of?'
-for s in ['Spring', 'Summer', 'Fall', 'Winter']:
-    df['season_'+s.lower()] = df[season_col].fillna('').str.contains(s).astype(float)
+for s in ['spring', 'summer', 'fall', 'winter']:
+    df['season_' + s] = df[season_col].fillna('').str.contains(s, case=False).astype(float)
 df['season_missing'] = df[season_col].isna().astype(float)
 
 df['food_text'] = df['If this painting was a food, what would be?'].fillna('').str.lower()
@@ -85,9 +90,10 @@ print(f"  2 = {le.classes_[2]}")
 print("\nTraining logistic regression (C=5.0)...")
 clf = LogisticRegression(C=5.0, max_iter=1000, solver='lbfgs')
 clf.fit(X, y)
+# Replace your Step 4 training with this to get the real number
+cv_scores = cross_val_score(clf, X, y, cv=5) 
+print(f"5-Fold CV Accuracy: {np.mean(cv_scores):.4f} (+/- {np.std(cv_scores):.4f})")
 
-train_acc = np.mean(clf.predict(X) == y)
-print(f"Training accuracy: {train_acc:.4f}")
 
 # ── Step 5: Print the weights and intercept ───────────────────────────────
 print("\n" + "="*60)
